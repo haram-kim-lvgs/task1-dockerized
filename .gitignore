@@ -1,0 +1,24 @@
+#Credentials foler
+credentials/
+
+#markdown files except README*.md, but ignore README-secret.md
+*.md
+!README*.md
+README-secret.md
+
+#Mac only system file
+.DS_Store
+
+# Logs
+logs
+*.log
+.log*
+
+#.env
+.env
+
+#node dependencies
+node_modules/
+
+#Docker ignore
+.dockerignore
