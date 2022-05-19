@@ -1,0 +1,48 @@
+#version has been deprecated 
+#https://docs.docker.com/compose/compose-file/#compose-file
+#version: '3.8'
+
+services:
+  mysql:
+    image: mysql:5.7
+    platform: linux/amd64
+    #using .env file for docker = https://docs.docker.com/compose/compose-file/#env_file 
+    env_file: 
+      - ./.env
+    #using environment variables, which gets used by container = https://docs.docker.com/compose/compose-file/#environment
+    environment:
+      - MYSQL_ROOT_PASSWORD=$DB_PASSWORD
+      - MYSQL_DATABASE=$DB_NAME
+      # MYSQL_TCP_PORT env var needed to be able to expose port other than the default 3306 = https://stackoverflow.com/questions/50456780/run-mysql-on-port-3307-using-docker-compose
+      - MYSQL_TCP_PORT=$DB_PORT
+    #ports in short syntax ([HOST:]CONTAINER[/PROTOCOL]) = https://docs.docker.com/compose/compose-file/#ports
+    ports:
+      - $DB_PORT:$DB_PORT
+    volumes:
+      #volumes should be mapped to default directory of each database type, for mysql, it is /var/lib/mysql
+      - db:/var/lib/mysql
+  node:
+    #node container will NOT run until mysql container has been started
+      #it is possible to set more granular condition with long syntax = https://docs.docker.com/compose/compose-file/#long-syntax-1 
+    depends_on:
+      - mysql
+    platform: linux/amd64
+    build: ./src
+    env_file: 
+      - ./.env
+    ports:
+      - $APP_PORT:$APP_PORT
+    #stdin_open & tty together opens container in interactive mode = https://stackoverflow.com/questions/36249744/interactive-shell-using-docker-compose
+      #stdin_open (i.e., docker run -i)= https://docs.docker.com/compose/compose-file/#stdin_open
+    stdin_open: true
+      #tty (i.e., docker run -t) = https://docs.docker.com/compose/compose-file/#tty
+    tty: true
+
+volumes:
+  #doc about named volume & bind volume
+    # https://docs.docker.com/get-started/06_bind_mounts/
+  #using named volume instead of bind volume
+    # might want to use bind volume instead, if developing inside container to take advantage of tools such as nodemon
+  db:
+
+#networks:
