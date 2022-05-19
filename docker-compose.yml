@@ -24,6 +24,8 @@ services:
   node:
     #node container will NOT run until mysql container has been started
       #it is possible to set more granular condition with long syntax = https://docs.docker.com/compose/compose-file/#long-syntax-1 
+    depends_on:
+      - mysql
     platform: linux/amd64
     build: ./src
     env_file: 
