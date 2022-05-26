@@ -20,5 +20,5 @@
     "useUnknownInCatchVariables": false // TypeScript 4.4+ only!
   },
   "include": ["./src/**/*.ts", "./src/**/*.js"],
-  "exclude": ["./src/node_modules", "./src/<node_internals>/**"]
+  "exclude": ["./src/node_modules", "./src/<node_internals>/**", "./types"]
 }
