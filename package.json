@@ -9,7 +9,9 @@
     "mysql2": "^2.3.3",
     "path": "^0.12.7"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/node": "^17.0.35"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./src/server.js"
