@@ -17,7 +17,7 @@ const config = {
         },
     //google API config
     googleAPI : {
-        keyFile: path.resolve(`${__dirname}/../${process.env.GOOGLE_SECRET_PATH}`),
+        keyFile: path.resolve(`${__dirname}/../../${process.env.GOOGLE_SECRET_PATH}`),
         scopes: [process.env.GOOGLE_API_SCOPE]
     },
     }

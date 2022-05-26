@@ -27,7 +27,7 @@ services:
     depends_on:
       - mysql
     platform: linux/amd64
-    build: ./src
+    build: ./
     env_file: 
       - ./.env
     ports:

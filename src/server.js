@@ -20,6 +20,7 @@ const {
 
 //sanity check
 console.log(`Current working directory of node = ${__dirname}`);
+console.log(`credential directory = ${config.googleAPI.keyFile}`);
 
 //use .env file
 require('dotenv').config({path: `${__dirname}/../.env`});

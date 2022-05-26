@@ -1,0 +1,20 @@
+{
+  "name": "TASK1-MYSQL5.7-N12.22.7",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./out/server.js",
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "googleapis": "^100.0.0",
+    "mysql2": "^2.3.3",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./out/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

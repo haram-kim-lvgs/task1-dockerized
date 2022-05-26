@@ -21,4 +21,7 @@ logs
 node_modules/
 
 #Docker ignore
-.dockerignore
+#.dockerignore
+
+#package-lock
+package-lock.json
