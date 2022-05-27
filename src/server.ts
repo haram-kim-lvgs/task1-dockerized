@@ -1,29 +1,30 @@
-const path = require('path');
+import path from 'path';
 //use mysql2 because it comes with prepared statements and promises wrapper(?) = https://github.com/sidorares/node-mysql2#using-prepared-statements
-const mysql = require('mysql2');
+import mysql from 'mysql2';
 
 //import config (for db, google API)
-const config = require('./config/config.js');
+import config from './config/config.js';
 
 //import mysql functions
-const {
+import {
     initTable,
     resetTable,
     insertToTable
-    } = require('./mysql/mysql.js');
+    } from './mysql/mysql.js';
 
 //import google API and google sheets functions
-const {
+import {
     googleAPI, 
     googleSheets
-    } = require('./googleSheets/googleSheets.js');
+    } from './googleSheets/googleSheets.js';
 
 //sanity check
 console.log(`Current working directory of node = ${__dirname}`);
 console.log(`credential directory = ${config.googleAPI.keyFile}`);
 
 //use .env file
-require('dotenv').config({path: `${__dirname}/../.env`});
+import dotenv from 'dotenv';
+dotenv.config({path: `${__dirname}/../.env`});
 
 //execute the whole logic as anonymous async function that runs as soon as node server.js
 (async () => {
