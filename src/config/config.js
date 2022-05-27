@@ -8,8 +8,8 @@ const env = process.env;
 const config = {
     //db config
     db : {
-         //for host, use db name defined in docker-compose.yml
-        host    : env.DB_HOST, 
+        //for host, use db name defined in docker-compose.yml
+        host    : env.DB_HOST,
         port    : env.DB_PORT,
         database: env.DB_NAME,
         user    : env.DB_USER,
