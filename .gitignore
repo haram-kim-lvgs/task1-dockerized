@@ -25,3 +25,9 @@ node_modules/
 
 #package-lock
 package-lock.json
+
+#tsc output folder
+out/
+
+#tsx incremental file
+tsconfig.tsbuildinfo
