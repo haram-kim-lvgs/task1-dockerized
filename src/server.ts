@@ -3,24 +3,26 @@ import path from 'path';
 import mysql from 'mysql2';
 
 //import config (for db, google API)
-import config from './config/config.js';
+// import * as config from './config/config';
+// import config from './config/config'; //--> in the back this is simply a shorthand for above line... which imports only the default
+import {config} from './config/config';
 
 //import mysql functions
 import {
     initTable,
     resetTable,
     insertToTable
-    } from './mysql/mysql.js';
+    } from './mysql/mysql';
 
 //import google API and google sheets functions
 import {
     googleAPI, 
     googleSheets
-    } from './googleSheets/googleSheets.js';
+    } from './googleSheets/googleSheets';
 
 //sanity check
 console.log(`Current working directory of node = ${__dirname}`);
-console.log(`credential directory = ${config.googleAPI.keyFile}`);
+console.log(`credential directory = ${config.googleApi.keyFile}`);
 
 //use .env file
 import dotenv from 'dotenv';
@@ -33,6 +35,7 @@ dotenv.config({path: `${__dirname}/../.env`});
         //https://stackoverflow.com/questions/9736188/mysql-persistent-connection-vs-connection-pooling
         //https://dev.mysql.com/blog-archive/mysql-connection-handling-and-scaling/
         //https://devdotcode.com/connection-pooling-vs-single-connection/
+    // const dbConnection = mysql.createConnection(config['db']); //https://stackoverflow.com/questions/38324949/error-ts2339-property-x-does-not-exist-on-type-y?rq=1
     const dbConnection = mysql.createConnection(config.db);
     
     //initialize MYSQL init table if it does not already exists
