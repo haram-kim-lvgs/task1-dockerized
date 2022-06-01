@@ -1,5 +1,8 @@
+//import mysql2 package
+import type mysql from 'mysql2';
+
 //init MYSQL table
-module.exports.initTable = (dbConnection, dbTableName) => {
+export function initTable (dbConnection: mysql.Connection, dbTableName: string): void {
     const dbTableInitSqlQuery = `CREATE TABLE IF NOT EXISTS ${dbTableName} (id int NOT NULL AUTO_INCREMENT, cell VARCHAR(50), data TEXT, PRIMARY KEY(id))`
     
     dbConnection.execute(dbTableInitSqlQuery, (err) => {
@@ -9,10 +12,12 @@ module.exports.initTable = (dbConnection, dbTableName) => {
 }
 
 //reset MYSQL table
-module.exports.resetTable = (dbConnection, dbTableName) => {
+// export function resetTable (dbConnection: mysql.Connection, dbTableName: string): mysql.OkPacket|mysql.RowDataPacket{
+export function resetTable (dbConnection: mysql.Connection, dbTableName: string): void {
     const dbTableResetSqlQuery = `DELETE FROM ${dbTableName}`;
     
-    dbConnection.execute(dbTableResetSqlQuery, (err, result) => {
+    //https://livecodestream.dev/post/your-guide-to-building-a-nodejs-typescript-rest-api-with-mysql/
+    dbConnection.execute(dbTableResetSqlQuery, (err, result: mysql.OkPacket) => {
         if (err) throw err;
         console.log(`Resetted database table = ${dbTableName}`);
         console.log(`Number of records deleted: ${result.affectedRows}`);
@@ -20,7 +25,7 @@ module.exports.resetTable = (dbConnection, dbTableName) => {
 }
 
 //insert rows to MYSQL table
-module.exports.insertToTable = (dbConnection, dbTableName, rows) => {   
+export function insertToTable (dbConnection: mysql.Connection, dbTableName: string, rows: any[][]): void {   
     const dbInsertToTableQuery = `INSERT INTO ${dbTableName} (cell, data) VALUES ?`;
     
     dbConnection.query(dbInsertToTableQuery, [rows], 
