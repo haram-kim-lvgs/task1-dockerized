@@ -1,9 +1,15 @@
 //import relevant type definitions from types/types.ts
-// import type {
-//     GoogleApiConfig,
-// } from '../types/types';
+import type {
+    GoogleApiConfig,
+} from '../types/types';
+
+//import type-only.... from a sub dependent package for type handling....(??)
+import type {
+    GaxiosResponse
+} from 'gaxios';
 
 //import google API related packages
+// import gapis, { //syntax to combine importing of default and named at the same time
 import {
     google,
     sheets_v4, //for type declaration
@@ -31,7 +37,8 @@ const googleAPI = {
 
 const googleSheets = {
     readTargetSheet: async (sheets: sheets_v4.Sheets, sheetsReadRequest: sheets_v4.Params$Resource$Spreadsheets$Values$Get) => {
-        let result; //LATER - need to figure out type notation from dependency npm: GaxiosResponse<sheets_v4.Schema$ValueRange>
+        // let result: sheets_v4.Sheets; //resolved the type notation through type-only import from sub-dependency npm: GaxiosResponse<sheets_v4.Schema$ValueRange>
+        let result: GaxiosResponse<sheets_v4.Schema$ValueRange>; 
         try{
             result = await sheets.spreadsheets.values.get(sheetsReadRequest);
         }catch(err){
