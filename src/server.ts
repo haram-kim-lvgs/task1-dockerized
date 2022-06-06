@@ -2,8 +2,8 @@
 import type { SheetsReadRequest } from './types/types';
 import type { sheets_v4 } from 'googleapis';
 
-//use mysql2 because it comes with prepared statements and promises wrapper(?) = https://github.com/sidorares/node-mysql2#using-prepared-statements
-import mysql from 'mysql2';
+//use mysql2 because it comes with prepared statements and promises wrapper 
+import mysql from 'mysql2/promise';
 
 //import config (for db, google API)
 // import * as config from './config/config'; //--> this imports everything from config & wrap them under object named config
