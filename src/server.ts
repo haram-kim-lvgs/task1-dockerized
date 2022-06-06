@@ -8,13 +8,13 @@ import mysql from 'mysql2/promise';
 //import config (for db, google API)
 // import * as config from './config/config'; //--> this imports everything from config & wrap them under object named config
 // import config from './config/config'; //--> in the back this is simply a shorthand for above line... which imports only the default
-import {config} from './config/config';
+import {config} from './config/config'; //--> this is named import
 
 //import mysql functions
 import {
     initTable,
     resetTable,
-    insertToTable
+    insertToTable,
     } from './mysql/mysql';
 
 //import google API and google sheets functions
@@ -29,17 +29,17 @@ console.log(`credential directory = ${config.googleApi.keyFile}`);
 
 //use .env file
 import dotenv from 'dotenv';
-
 dotenv.config({path: `${__dirname}/../.env`});
 
-//execute the whole logic as anonymous async function that runs as soon as node server.js
+//execute the whole logic as anonymous async function that runs as soon as node server.js starts
 (async () => {
     //create connection to mysql database
-        //using connection instead of pool, because this will be single thread and queries are simple
-        //https://stackoverflow.com/questions/9736188/mysql-persistent-connection-vs-connection-pooling
-        //https://dev.mysql.com/blog-archive/mysql-connection-handling-and-scaling/
-        //https://devdotcode.com/connection-pooling-vs-single-connection/
-    // const dbConnection = mysql.createConnection(config['db']); //https://stackoverflow.com/questions/38324949/error-ts2339-property-x-does-not-exist-on-type-y?rq=1
+        //decided to use connection pool instead of single connection for potential scalability
+            //https://dev.mysql.com/blog-archive/mysql-connection-handling-and-scaling/
+            //https://stackoverflow.com/questions/20712417/why-are-database-connection-pools-better-than-a-single-connection
+            //https://devdotcode.com/connection-pooling-vs-single-connection/
+        //biggest reason = decreasing the overhead of creating and removing connections for every query, which can impact performance of the application when it scales
+            //using promise wrapper of mysql2 = https://github.com/sidorares/node-mysql2/blob/master/documentation/Promise-Wrapper.md#es7-async-await
     const dbConnectionPool: mysql.Pool = mysql.createPool(config.db); 
     
     //initialize MYSQL init table if it does not already exists
@@ -50,6 +50,7 @@ dotenv.config({path: `${__dirname}/../.env`});
     
     let result: Array<mysql.ResultSetHeader> | undefined = await initTable(dbConnectionPool, dbTableName, maxRetry, retryInterval);    
         if(!result){          
+            //(can comment out below for testing = ) if comment out below, node will not crash at error 
             throw new Error(`CRASHING APP because FAILED TO INIT TABLE within ${maxRetry} attempts, defined by env DB_INIT_RETRY`);
         }
 
@@ -60,6 +61,7 @@ dotenv.config({path: `${__dirname}/../.env`});
         let result: Array<mysql.ResultSetHeader> | undefined = await resetTable(dbConnectionPool, dbTableName, maxRetry, retryInterval);
 
         if(!result){
+            //(can comment out below for testing = ) if comment out below, node will not crash at error 
             throw new Error(`CRASHING APP because FAILED TO RESET INITIALIZED TABLE within ${maxRetry} attempts, defined by env DB_RESET_RETRY`);
         }
     }else{
@@ -77,6 +79,7 @@ dotenv.config({path: `${__dirname}/../.env`});
         spreadsheetId : sheetID,
         range: sheetName + '!' + sheetRange
     } 
+
     //send GET request to target Google Sheet
     const rows = await googleSheets.readTargetSheet(sheets, sheetsReadRequest);
 
@@ -89,12 +92,14 @@ dotenv.config({path: `${__dirname}/../.env`});
             rows.map((rows) => {    
                 console.log(`${rows}`);
             });
+            
             //because there are data, insert received data to mysql database table 
             const maxRetry = Number(process.env.DB_INSERT_RETRY);
             const retryInterval = Number(process.env.DB_INSERT_RETRY_INTERVAL);
 
             let result: Array<mysql.ResultSetHeader> | undefined = await insertToTable(dbConnectionPool, dbTableName, rows, maxRetry, retryInterval);
             if(!result){
+                //(can comment out below for testing = ) if comment out below, node will not crash at error 
                 throw new Error(`CRASHING APP because FAILED TO INSERT VALUES within ${maxRetry} attempts, defined by env DB_INSERT_RETRY`);
             }
         }else{
