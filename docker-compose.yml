@@ -4,7 +4,7 @@
 
 services:
   mysql:
-    image: mysql:5.7
+    image: mysql:5.7 
     platform: linux/amd64
     #using .env file for docker = https://docs.docker.com/compose/compose-file/#env_file 
     env_file: 
@@ -21,6 +21,25 @@ services:
     volumes:
       #volumes should be mapped to default directory of each database type, for mysql, it is /var/lib/mysql
       - db:/var/lib/mysql
+      #mounting custom cnf to set character set for mysql to support international languages
+        # https://stackoverflow.com/questions/46004648/how-to-setup-mysql-with-utf-8-using-docker-compose
+        #below custom cnf is needed to load the international characters on mysql client
+          #but appears that if the purpose just for inserting, skipping the custom cnf & just adding the command is sufficient?
+            #--> adding the default character set setting for client in custom.cnf enabled reading international characters from mysql client
+            #--> but it indeed does not matter for the handling?? 
+          #https://qiita.com/Suzuki09/items/c05664c7c0c08a19cebe
+        # [appears to be YES..?] = TESTING ABOVE HYPOTHESIS BY RUNNING WITHOUT BELOW LINE & CHECK THE DEFAULT LANG SET IN MYSQL
+        #command in mysql to check character set and collation = 'USE db_name; SELECT @@character_set_database, @@collation_database;'
+          #https://dev.mysql.com/doc/refman/8.0/en/charset-database.html
+      - ./international-lang-custom.cnf:/etc/mysql/conf.d/custom.cnf
+    command: 
+      #international language support
+        #https://stackoverflow.com/questions/766809/whats-the-difference-between-utf8-general-ci-and-utf8-unicode-ci
+        #https://dev.mysql.com/doc/mysql-g11n-excerpt/8.0/en/charset-unicode-sets.html
+        #https://blog.hubspot.com/website/what-is-utf-8
+      #["mysqld", "--character-set-server=utf8_unicode_520_ci"]
+        #--> was getting error : "mysqld: Character set 'utf8_unicode_520_ci' is not a compiled character set and is not specified in the '/usr/share/mysql-8.0/charsets/Index.xml' file"
+      ["mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
   node:
     #node container will NOT run until mysql container has been started
       #it is possible to set more granular condition with long syntax = https://docs.docker.com/compose/compose-file/#long-syntax-1 
