@@ -1,6 +1,9 @@
 #Credentials foler
 credentials/
 
+#transpiled TS output folder
+out/
+
 #markdown files except README*.md, but ignore README-secret.md
 *.md
 !README*.md
