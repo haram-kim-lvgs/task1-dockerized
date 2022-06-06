@@ -40,16 +40,31 @@ dotenv.config({path: `${__dirname}/../.env`});
         //https://dev.mysql.com/blog-archive/mysql-connection-handling-and-scaling/
         //https://devdotcode.com/connection-pooling-vs-single-connection/
     // const dbConnection = mysql.createConnection(config['db']); //https://stackoverflow.com/questions/38324949/error-ts2339-property-x-does-not-exist-on-type-y?rq=1
-    // @ts-ignore
-    const dbConnection: mysql.Connection = mysql.createConnection(config.db); /*as unknown as string*/ //forcing TS to recog it as string
+    const dbConnectionPool: mysql.Pool = mysql.createPool(config.db); 
     
     //initialize MYSQL init table if it does not already exists
         //nullish coalescing operator = https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator
     const dbTableName = process.env.DB_INIT_TABLE_NAME ?? 'default_table_name';
-    initTable(dbConnection, dbTableName);
+    const maxRetry = Number(process.env.DB_INIT_RETRY);
+    const retryInterval = Number(process.env.DB_INIT_RETRY_INTERVAL);
+    
+    let result: Array<mysql.ResultSetHeader> | undefined = await initTable(dbConnectionPool, dbTableName, maxRetry, retryInterval);    
+        if(!result){          
+            throw new Error(`CRASHING APP because FAILED TO INIT TABLE within ${maxRetry} attempts, defined by env DB_INIT_RETRY`);
+        }
 
-    //reset the init table
-    resetTable(dbConnection, dbTableName);
+    //reset initiated table if set to reset in .env file 
+    if(Boolean(process.env.DB_RESET_TABLE_AT_INIT)){
+        const maxRetry = Number(process.env.DB_RESET_RETRY);
+        const retryInterval = Number(process.env.DB_RESET_RETRY);
+        let result: Array<mysql.ResultSetHeader> | undefined = await resetTable(dbConnectionPool, dbTableName, maxRetry, retryInterval);
+
+        if(!result){
+            throw new Error(`CRASHING APP because FAILED TO RESET INITIALIZED TABLE within ${maxRetry} attempts, defined by env DB_RESET_RETRY`);
+        }
+    }else{
+        console.log('SKIPPED table reset based on env var DB_RESET_TABLE_AT_INIT')
+    }
 
     //auth to Google API
     const sheets: sheets_v4.Sheets = await googleAPI.authForSheets(config.googleApi);
@@ -75,11 +90,17 @@ dotenv.config({path: `${__dirname}/../.env`});
                 console.log(`${rows}`);
             });
             //because there are data, insert received data to mysql database table 
-            insertToTable(dbConnection, dbTableName, rows);
+            const maxRetry = Number(process.env.DB_INSERT_RETRY);
+            const retryInterval = Number(process.env.DB_INSERT_RETRY_INTERVAL);
+
+            let result: Array<mysql.ResultSetHeader> | undefined = await insertToTable(dbConnectionPool, dbTableName, rows, maxRetry, retryInterval);
+            if(!result){
+                throw new Error(`CRASHING APP because FAILED TO INSERT VALUES within ${maxRetry} attempts, defined by env DB_INSERT_RETRY`);
+            }
         }else{
-            console.log('No data found on the target sheet.');
+            console.log('There was no data found on the target sheet.');
         }
     }else{
-        console.log('Issue with getting data from the target sheet.');
+        console.log('There was issue with getting data from the target sheet.');
     }
 })();
