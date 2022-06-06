@@ -6,7 +6,6 @@
     // "target": "ES2020",
     "module": "commonjs",
     "moduleResolution": "node",
-    // "outDir": "./../out",
     "outDir": "./out",
     "rootDir": "./src",
     "strict": true,
@@ -14,7 +13,7 @@
     "strictNullChecks": true,
     "checkJs": true, //to treat .js files as .ts files
     "allowJs": true,  //to treat .js files as .ts files
-    "types": ["node"], //https://www.typescriptlang.org/tsconfig#types
+    "types": ["node"], //https://www.typescriptlang.org/tsconfig#types //only packages listed will be included in the global scope
     "lib": ["es6"],
     "esModuleInterop": true,
     "skipLibCheck": true,
