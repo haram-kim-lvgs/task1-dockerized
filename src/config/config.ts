@@ -13,6 +13,7 @@ dotenv.config({path: `${__dirname}/../../.env`});
 const env = process.env;
 //const config = <Config> { //using type assertion
 const config: Config = { //using type notation
+    //mysql.PoolOptions = https://github.com/mysqljs/mysql#pool-options
     db : { //this might be using type inference && field name should be identical to how they are defined in type
         //for host, use db name defined in docker-compose.yml
         host    : env.DB_HOST ?? 'localhost',
